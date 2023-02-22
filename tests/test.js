@@ -34,7 +34,7 @@ describe('Authentication Test for Get', function() {
   describe('Success', function() {
       it('Return the product for Get if the id does not exist', function(done) {
           chai.request(app).get('/v1/product/1').send({}).end(function(err, res) {
-              chai.expect(res.statusCode).to.be.equal(200);
+              chai.expect(res.statusCode).to.be.equal(400);
               done();
           });
       });
