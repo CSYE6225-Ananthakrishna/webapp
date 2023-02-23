@@ -57,4 +57,36 @@ Steps to run the project:
 3. In order to run the application, open a terminal and run command "npm start".
 4. To test the code, run "npm test" on terminal.
 
-Packer:
+Assignment 4:
+
+This repository contains a web application built using nodeJS and PostgresSql as the database. The application includes RESTful API endpoints for users and products, which support GET, POST, and PUT methods.
+
+Prerequisites:
+
+To run the application, ensure that nodeJS, PostgresSql, and Packer are installed on your machine and added to the environment variables path. Also, make sure that Postman is installed to test the APIs.
+
+Follow these steps to run the project:
+
+1. Fork the web application repository and raise a pull request from the fork branch to the organization main with any small change.
+2. The PR will trigger a GitHub workflow that merges the pull request and invokes the Packer file to build the AMI.
+3. After the successful completion of the workflow, an AMI will be created in the dev AWS console.
+4. Copy the AMI ID to the var.tfvars file in the cloned aws-infra repository.
+5. Run the Terraform apply command with the var.tfvars file to create the EC2 instance in the dev/demo AWS console account.
+6. Share the AMI created in dev with the demo account using the account ID configured while running the Packer template file.
+7. Copy the public IP of the EC2 instance and paste it into Postman to test the API endpoints.
+8. Start the server by running the command npm start in the terminal.
+9. Use Postman to test the API endpoints as follows:
+
+a. To add a new user, configure the method as 'POST' and enter http://{public_IP_of_EC2}:3000/v1/user in the request URL. Add first_name, last_name, username (email id), password in JSON format in the request body and click send.
+
+b. To view a user's details, configure the method as 'GET' and enter http://{public_IP_of_EC2}:3000/v1/user/{ID} in the request URL. Set the authorization to basic authentication and enter the registered username as the email id and the password. Also, add the ID of the user in the URL and click send to get the data.
+
+c. To update a user's details, configure the method as 'PUT' and enter http://{public_IP_of_EC2}:3000/v1/user/{ID} in the request URL. Set the authorization to basic authentication and enter the registered username as the email id and the password. Also, add the ID of the user in the URL. The user can only update the first_name, last_name, and password. Click send to update the data in the database.
+
+d. To add a new product, configure the method as 'POST' and enter http://{public_IP_of_EC2}:3000/v1/product in the request URL. Add name, description, SKU, manufacturer, and quantity in JSON format in the request body. Only existing/authorized users can post products.
+
+e. To view a product's details, configure the method as 'GET' and enter http://{public_IP_of_EC2}:3000/v1/product/{SKU} in the request URL. No authentication is done here.
+
+f. To update a product's details, configure the method as 'PUT' or 'PATCH' and enter http://{public_IP_of_EC2}:3000/v1/product/{SKU} in the request URL. The user who creates the product can update its details. The values that need to be updated should be given in JSON format in the request body. The response for this call is the 'Data is Updated' message.
+
+g. To delete a product, configure the method as 'DELETE' and enter `http://{public_IP_of_EC
