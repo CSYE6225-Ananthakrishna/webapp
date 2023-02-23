@@ -28,12 +28,12 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
-      - name: Setup Packer
+      - name: Setup packer
         uses: hashicorp-contrib/setup-packer@v1.0.0
       - name: Run packer commands
         run: |
-          zip -r webApp.zip ./
-          pwd ./webApp
+          zip -r webapp.zip ./
+          pwd ./webapp
           cd Packer
           packer build .
         env:

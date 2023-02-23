@@ -26,9 +26,9 @@ jobs:
     - run: npm run build --if-present
     - run: CI=true npm test
     - run: |
-          zip -r webApp.zip ./
-          pwd ./webApp
-          cd Packer
+          zip -r webapp.zip ./
+          pwd ./webapp
+          cd packer
           packer init .
           packer fmt .
           packer validate .
