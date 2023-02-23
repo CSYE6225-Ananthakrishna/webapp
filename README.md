@@ -56,3 +56,5 @@ Steps to run the project:
 2. In VS Code, open the folder and run npm install which will install all the dependencies.
 3. In order to run the application, open a terminal and run command "npm start".
 4. To test the code, run "npm test" on terminal.
+
+Packer:
