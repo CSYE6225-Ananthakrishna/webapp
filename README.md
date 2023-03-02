@@ -90,3 +90,19 @@ e. To view a product's details, configure the method as 'GET' and enter http://{
 f. To update a product's details, configure the method as 'PUT' or 'PATCH' and enter http://{public_IP_of_EC2}:3000/v1/product/{SKU} in the request URL. The user who creates the product can update its details. The values that need to be updated should be given in JSON format in the request body. The response for this call is the 'Data is Updated' message.
 
 g. To delete a product, configure the method as 'DELETE' and enter `http://{public_IP_of_EC
+
+Assignment5
+
+In this assignment we are adding 4 new routes in our web application
+
+POST : v1/product/productID/image -> to post a new image
+
+GET : v1/product/productID/image -> to get all images
+
+GET : v1/product/productID/image/imageId -> to get specific image
+
+DELETE : v1/product/productID/image/imageId -> to delete a specific image
+
+When we post and delete images , they should get uploaded and deleted in the S3 bucket in Aws ec2 instance
+
+This assignment should ensure that our app runs in the ec2 instance and get connected to the rds instance.
