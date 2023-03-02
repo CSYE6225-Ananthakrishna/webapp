@@ -10,9 +10,9 @@ const {Sequelize} = require('sequelize');
 //   port: process.env.DB_PORT,
 // });
 
-const sequelize = new Sequelize("users", "postgres", "12345", {
-  host: "localhost",
-  dialect: 'postgres',
+const sequelize = new Sequelize("localhost", process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
+  dialect: "postgres",
   port:"5432",
 });
 
