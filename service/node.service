@@ -1,6 +1,6 @@
 [Unit]
 Description=webapp nodejs Application
-After=cloud-final.target
+After=cloud-final.service
 
 [Service]
 Type=simple
@@ -15,6 +15,7 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=webapp
 User=ec2-user
+workingDirectory = /home/ec2-user/script
 ExecStart= /usr/bin/node /home/ec2-user/index.js
 
 
