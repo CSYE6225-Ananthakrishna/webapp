@@ -91,7 +91,7 @@ f. To update a product's details, configure the method as 'PUT' or 'PATCH' and e
 
 g. To delete a product, configure the method as 'DELETE' and enter `http://{public_IP_of_EC
 
-Assignment5
+Assignment 5:
 
 In this assignment we are adding 4 new routes in our web application
 
