@@ -107,7 +107,7 @@ When we post and delete images , they should get uploaded and deleted in the S3 
 
 This assignment should ensure that our app runs in the ec2 instance and get connected to the rds instance.
 
-Assignment 6:
+Assignment 6: Namecheap
 
 Registering a Domain Name:
 
