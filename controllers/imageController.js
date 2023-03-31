@@ -2,7 +2,7 @@ const sequelize = require('../db');
 const logger = require('../logging');
 const uuid = require('uuid');
 const res = require('../utils/responseLib');
-//const statsD = require('node-statsd');
+const statsD = require('node-statsd');
 const {
     emailValidation,
     hashingOfPassword,
@@ -31,6 +31,7 @@ app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
 }))
 
+const metricCounter = new statsD('localhost', 8125);
 
 
 // const SESConfig = {
@@ -47,6 +48,7 @@ app.use(fileUpload({
 //AWS.config.update(SESConfig);
 
 const createProductImage = (request, response) => {
+    metricCounter.increment("createProductImage");
 
     const uniqueId = uuid.v4();
 
@@ -91,6 +93,7 @@ const createProductImage = (request, response) => {
                                     // };
 
                                     if (request.file.mimetype != 'image/jpeg' && request.file.mimetype != 'image/png' && request.file.mimetype != 'image/jpg') {
+                                        logger.warn("Upload format incorrect");
                                         return response.status(400).send({
                                             message: 'Uploaded format incorrect'
                                         });
@@ -118,6 +121,7 @@ const createProductImage = (request, response) => {
 
                                         };
                                         images.create(newImage).then(result => {
+                                            logger.info("Image uploaded");
                                             response.status(201).send(result);
                                         })
                                             .catch(error => {
@@ -128,6 +132,7 @@ const createProductImage = (request, response) => {
                                     })
 
                                 } else {
+                                    logger.warn("No file uploaded");
                                     response.status(400).send("No file Uploaded");
                                 }
 
@@ -147,6 +152,7 @@ const createProductImage = (request, response) => {
 
 
         } else {
+            logger.error("No user found");
             response.status(401).send('No user found');
         }
 
@@ -161,6 +167,8 @@ const createProductImage = (request, response) => {
 
 
 const getAllProductImages = (request, response) => {
+
+    metricCounter.increment("getAllProductImages");
 
     const [username, password] = basicAuthenticationHandler(request);
 
@@ -183,6 +191,7 @@ const getAllProductImages = (request, response) => {
 
                                 images.findAll({ where: { product_id: request.params.productId } }).then(result => {
                                     // console.log(result);
+                                    logger.info("Fetched all images");
                                     response.status(200).send(result);
 
                                 }).catch(error => {
@@ -218,6 +227,7 @@ const getAllProductImages = (request, response) => {
 
 const getProductImage = (request, response) => {
 
+    metricCounter.increment("getProductImage");
     const [username, password] = basicAuthenticationHandler(request);
 
     if (!username || !password) {
@@ -245,6 +255,7 @@ const getProductImage = (request, response) => {
                                     if (result) {
                                         // console.log(result);
                                         if (result.product_id == request.params.productId) {
+                                            logger.info("Image with id " + request.params.imageId + ' fetched');
                                             response.status(200).send(result);
                                         } else {
                                             response.status(404).send("Image not found");
@@ -286,6 +297,8 @@ const getProductImage = (request, response) => {
 
 const deleteProductImage = async (request, response) => {
 
+    metricCounter.increment("deleteProductImage");
+
     const [username, password] = basicAuthenticationHandler(request);
 
     if (!username || !password) {
@@ -312,6 +325,7 @@ const deleteProductImage = async (request, response) => {
                                 // console.log("hello");
                                 //  console.log(!imageId);
                                 if (!imageId) {
+                                    logger.error("image not found");
                                     return response.status(404).json({
                                         message: 'Image not found'
                                     });
@@ -346,6 +360,7 @@ const deleteProductImage = async (request, response) => {
                                                         image_id: image_id
                                                     }
                                                 }).then(result => {
+                                                    logger.info("Image Deleted");
                                                     response.status(204).send(result);
 
                                                 })
@@ -370,6 +385,7 @@ const deleteProductImage = async (request, response) => {
                         });
 
                     } else {
+                        logger.error("product not added by this user");
                         response.status(403).send('Product not added by ' + user.username);
                     }
                 } else {
