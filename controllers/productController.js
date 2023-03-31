@@ -2,7 +2,7 @@ const sequelize = require('../db');
 const logger = require('../logging');
 const res = require('../utils/responseLib');
 const uuid = require('uuid');
-//const statsD = require('node-statsd');
+const statsD = require('node-statsd');
 const {
     emailValidation,
     hashingOfPassword,
@@ -28,6 +28,7 @@ app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
 }))
 
+const metricCounter = new statsD('localhost', 8125);
 
 
 let userFlag = false;
@@ -37,11 +38,14 @@ let userFlag = false;
 
 const createProduct = (request, response) => {
 
+    metricCounter.increment("createProduct");
+
     const [username, password] = basicAuthenticationHandler(request);
     const { name, description, sku, manufacturer, quantity } = request.body;
 
 
     if (!username || !password) {
+        logger.error("Username or password not provided");
         return response.status(401).json("Please provide Username and Password");
     }
 
@@ -66,6 +70,7 @@ const createProduct = (request, response) => {
 
                     //console.log(!quantity);
                     if ((!name || !description || !sku || !manufacturer || !quantity) && quantity != 0) {
+                        logger.error("Incomplete Data");
                         return response.status(400).json("Incomplete Data");
                     }
 
@@ -83,6 +88,7 @@ const createProduct = (request, response) => {
 
                     products.findOne({ where: { sku: sku } }).then((product) => {
                         if (product) {
+                            logger.error("Product with same sku Already Exists");
                             return response.status(400).send(res.generate(true, 'Product with same sku Already Exists', 400, {}));
                         }
                         else {
@@ -99,6 +105,8 @@ const createProduct = (request, response) => {
                                 owner_user_id: user.id
                             }).then((result) => {
 
+                               logger.info("Product added");
+
                                 return response.status(201).send(res.generate(false, 'Product added successfully', 201, result));
                             }).catch((error) => {
                                 response.status(400).send('Error inserting data to products table.Quantity should be in between 0 and 100.');
@@ -110,12 +118,14 @@ const createProduct = (request, response) => {
                     });
 
                 } else {
+                    logger.error("Invalid Password");
                     response.status(401).send('Invalid Password');
                 }
             })
 
 
         } else {
+            logger.error("User not found");
             response.status(401).send('User not found');
         }
 
@@ -135,14 +145,19 @@ const getProduct = (request, response) => {
 
     //console.log('Hello-pr');
 
+    metricCounter.increment("getProduct");
+
     products.findByPk(request.params.productId).then((result) => {
         if (result) {
+            logger.info("Product fetched");
             return response.status(200).send(res.generate(false, 'Product fetched', 200, result));
+           
         } else {
             return response.status(400).send(res.generate(true, 'Product with productId ' + request.params.productId + ' does not exist', 400, result));
         }
 
     }).catch((error) => {
+        logger.info("product fetch failed");
         return response.status(400).send(res.generate(true, 'Product fetch failed', 400, {}));
     })
 
@@ -151,6 +166,8 @@ const getProduct = (request, response) => {
 //PUT Method
 
 const updateProduct = (request, response) => {
+
+    metricCounter.increment("updateProduct");
 
     const [username, password] = basicAuthenticationHandler(request);
 
@@ -196,6 +213,7 @@ const updateProduct = (request, response) => {
                                                 products.update(request.body, { where: { id: request.params.productId } }).then((updatedData) => {
 
                                                     response.status(204).send('Data is Updated');
+                                                    logger.info("Product updated");
 
                                                 }).catch((error) => {
                                                     response.status(400).send("Error updating Data. Quantity should be in between 0 and 100.")
@@ -205,7 +223,7 @@ const updateProduct = (request, response) => {
 
                                         else {
                                             products.update(request.body, { where: { id: request.params.productId } }).then((updatedData) => {
-
+                                                logger.info("Product updated");
                                                 response.status(204).send('Data is Updated');
 
                                             }).catch((error) => {
@@ -216,7 +234,7 @@ const updateProduct = (request, response) => {
                                 }
                                 else {
                                     products.update(request.body, { where: { id: request.params.productId } }).then((updatedData) => {
-
+                                        logger.info("Product updated");
                                         response.status(204).send('Data is Updated');
 
                                     }).catch((error) => {
@@ -311,7 +329,7 @@ const editProduct = (request, response) => {
 
                                             };
                                             products.update(patchProduct, { where: { id: request.params.productId } }).then((updatedData) => {
-
+                                                logger.info("Product updated");
                                                 response.status(204).send('Data is Updated');
 
                                             }).catch((error) => {
@@ -322,7 +340,7 @@ const editProduct = (request, response) => {
                                 }
                                 else {
                                     products.update(request.body, { where: { id: request.params.productId } }).then((updatedData) => {
-
+                                        logger.info("Product updated");
                                         response.status(204).send('Data is Updated');
 
                                     }).catch((error) => {
@@ -386,9 +404,12 @@ const intermediateMethodToUpdate = (request, response, username) => {
 
 const deleteProduct = (request, response) => {
 
+    metricCounter.increment("deleteProduct");
+
     const [username, password] = basicAuthenticationHandler(request);
 
     if (!username || !password) {
+        logger.error("Please provide Username and Password");
         return response.status(401).json("Please provide Username and Password");
     }
 
@@ -439,11 +460,13 @@ const deleteProduct = (request, response) => {
                             
 
                                 products.destroy({ where: { id: request.params.productId } }).then((result) => {
+                                    logger.info("Product deleted");
                                     response.status(204).send('Products deleted');
                                 }).catch((error) => {
                                     response.status(400).send('Data destroy failed');
                                 })
                                 images.destroy({ where: { product_id: request.params.productId } }).then((result) => {
+                                    logger.info("Images Deleted");
                                     response.status(204).send("Images Deleted")
                                 })
                             } else {
