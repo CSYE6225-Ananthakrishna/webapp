@@ -131,4 +131,9 @@ build {
     inline = ["rpm -Va --nofiles --nodigest"]
   }
 
+  post-processor "manifest" {
+    output = "manifest.json"
+
+  }
+
 }
