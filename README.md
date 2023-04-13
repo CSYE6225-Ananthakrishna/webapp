@@ -126,6 +126,8 @@ Configuring Amazon Route 53:
 
 Assignment 7:
 
+
 Assignment 8:
+
 
 Assignment 9:
