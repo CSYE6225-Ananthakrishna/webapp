@@ -264,7 +264,7 @@ const intermediateMethodToUpdate = (request, response, username) => {
 const getHealth = (request, response) => {
     logger.info("Health of the server is OK");
     metricCounter.increment("getHealth");
-    return response.status(200).json("Everything is good");
+    return response.status(200).json("Good Health!");
 }
 
 
