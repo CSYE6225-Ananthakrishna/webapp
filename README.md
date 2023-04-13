@@ -125,3 +125,7 @@ Configuring Amazon Route 53:
 8. Create a subdomain and hosted zone for the demo AWS account by repeating steps 5-7, replacing "dev" with "prod."
 
 Assignment 7:
+
+Assignment 8:
+
+Assignment 9:
